@@ -82,38 +82,73 @@ def depthFirstSearch(problem):
     To get started, you might want to try some of these simple commands to
     understand the search problem that is being passed in:
     """
-    print "Start:", problem.getStartState()
-    print "Is the start a goal?", problem.isGoalState(problem.getStartState())
-    print "Start's successors:", problem.getSuccessors(problem.getStartState())
+    #print "Start:", problem.getStartState()
+    #print "Is the start a goal?", problem.isGoalState(problem.getStartState())
+    #print "Start's successors:", problem.getSuccessors(problem.getStartState())
     stack = util.Stack()
     first_node = (problem.getStartState(), None, 0, None)
     stack.push(first_node)
     visited = set()
     while not stack.isEmpty():
+
         next_node = stack.pop()
-        visited.add(next_node[0])
-        print next_node[0] , next_node[1]
+        
+        """print next_node[0] , next_node[1]"""
         if problem.isGoalState(next_node[0]):
-            print 'Goal', next_node[0]
+            """print 'Goal', next_node[0]"""
             actions = [next_node[1]]
-            print "Last action: ", next_node[1]
+            """print "Last action: ", next_node[1]"""
             p = next_node[3]
             while p is not None:
                 actions.append(p[1])
-                print "Last action: ", p[1], "state: ", p[0]
+                """print "Last action: ", p[1], "state: ", p[0]"""
                 p = p[3]
-            print actions[0:-1][::-1]
+            """print actions[0:-1][::-1]"""
             return actions[0:-1][::-1]
         else:
-            for suc in problem.getSuccessors(next_node[0]):
-                if suc[0] not in visited:
+            if next_node[0] not in visited:
+                print "node actual: " , next_node[0]
+                visited.add(next_node[0])
+                for suc in problem.getSuccessors(next_node[0]):
                     stack.push((suc[0], suc[1], suc[2], next_node))
+                    #print (suc[0], suc[1], suc[2], next_node)
+
     "*** YOUR CODE HERE ***"
     util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
+    """print "Start:", problem.getStartState()
+    print "Is the start a goal?", problem.isGoalState(problem.getStartState())
+    print "Start's successors:", problem.getSuccessors(problem.getStartState())"""
+    queue = util.Queue()
+    first_node = (problem.getStartState(), None, 0, None)
+    queue.push(first_node)
+    visited = set()
+    while not queue.isEmpty():
+
+        next_node = queue.pop()
+        
+        """print next_node[0] , next_node[1]"""
+        if problem.isGoalState(next_node[0]):
+            """print 'Goal', next_node[0]"""
+            actions = [next_node[1]]
+            """print "Last action: ", next_node[1]"""
+            p = next_node[3]
+            while p is not None:
+                actions.append(p[1])
+                """print "Last action: ", p[1], "state: ", p[0]"""
+                p = p[3]
+            """print actions[0:-1][::-1]"""
+            return actions[0:-1][::-1]
+        else:
+            if next_node[0] not in visited:
+                print "node actual: " , next_node[0]
+                visited.add(next_node[0])
+                for suc in problem.getSuccessors(next_node[0]):
+                    queue.push((suc[0], suc[1], suc[2], next_node))
+                    #print (suc[0], suc[1], suc[2], next_node)
+                    
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
