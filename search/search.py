@@ -93,25 +93,18 @@ def depthFirstSearch(problem):
 
         next_node = stack.pop()
         
-        """print next_node[0] , next_node[1]"""
         if problem.isGoalState(next_node[0]):
-            """print 'Goal', next_node[0]"""
             actions = [next_node[1]]
-            """print "Last action: ", next_node[1]"""
             p = next_node[3]
             while p is not None:
                 actions.append(p[1])
-                """print "Last action: ", p[1], "state: ", p[0]"""
                 p = p[3]
-            """print actions[0:-1][::-1]"""
             return actions[0:-1][::-1]
         else:
             if next_node[0] not in visited:
-                print "node actual: " , next_node[0]
                 visited.add(next_node[0])
                 for suc in problem.getSuccessors(next_node[0]):
                     stack.push((suc[0], suc[1], suc[2], next_node))
-                    #print (suc[0], suc[1], suc[2], next_node)
 
     "*** YOUR CODE HERE ***"
     util.raiseNotDefined()
@@ -129,31 +122,60 @@ def breadthFirstSearch(problem):
 
         next_node = queue.pop()
         
-        """print next_node[0] , next_node[1]"""
+       
         if problem.isGoalState(next_node[0]):
-            """print 'Goal', next_node[0]"""
             actions = [next_node[1]]
-            """print "Last action: ", next_node[1]"""
             p = next_node[3]
             while p is not None:
                 actions.append(p[1])
-                """print "Last action: ", p[1], "state: ", p[0]"""
                 p = p[3]
-            """print actions[0:-1][::-1]"""
             return actions[0:-1][::-1]
         else:
             if next_node[0] not in visited:
-                print "node actual: " , next_node[0]
                 visited.add(next_node[0])
                 for suc in problem.getSuccessors(next_node[0]):
                     queue.push((suc[0], suc[1], suc[2], next_node))
-                    #print (suc[0], suc[1], suc[2], next_node)
                     
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
+    '''
+    Para este algoritmo valoramos el coste de cada nodo para 
+    llegar al Goal como prioridad en la cola y por lo tanto buscamos
+    el camino al Goal menos costoso desde el estado inicial.
+    '''
+    prio_queue = util.PriorityQueue()
+    first_node = (problem.getStartState(), None, 0, None)
+    prio_queue.push(first_node,first_node[2])               
+    visited = set()
+    while not prio_queue.isEmpty():                         
+
+        next_node = prio_queue.pop()
+        
+        
+        if problem.isGoalState(next_node[0]):
+            actions = [next_node[1]]
+            p = next_node[3]
+            
+            while p is not None:
+                actions.append(p[1])
+                p = p[3]
+            return actions[0:-1][::-1]
+        else:
+            if next_node[0] not in visited:
+                visited.add(next_node[0])
+                for suc in problem.getSuccessors(next_node[0]):
+                    cost = suc[2]
+                    parent = next_node
+                    while parent is not None:
+                        cost = cost + parent[2]
+                        parent = parent[3]
+                     # while de bactrack y suma de costes 
+                    
+                    prio_queue.push((suc[0], suc[1], suc[2], next_node),cost)
+
+
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
@@ -166,6 +188,35 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
+    prio_queue = util.PriorityQueue()
+    first_node = (problem.getStartState(), None, 0, None)
+    prio_queue.push(first_node,first_node[2])
+    visited = set()
+    while not prio_queue.isEmpty():
+
+        next_node = prio_queue.pop()
+        
+        
+        if problem.isGoalState(next_node[0]):
+            actions = [next_node[1]]
+            p = next_node[3]
+            
+            while p is not None:
+                actions.append(p[1])
+                p = p[3]
+            return actions[0:-1][::-1]
+        else:
+            if next_node[0] not in visited:
+                visited.add(next_node[0])
+                for suc in problem.getSuccessors(next_node[0]):
+                    cost = suc[2]
+                    parent = next_node
+                    while parent is not None:
+                        cost = cost + parent[2]
+                        parent = parent[3]
+                     # while de bactrack y suma de costes 
+                    
+                    prio_queue.push((suc[0], suc[1], suc[2], next_node),cost + heuristic(suc[0], problem))
     util.raiseNotDefined()
 
 
