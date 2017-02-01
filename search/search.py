@@ -141,9 +141,9 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     '''
-    Para este algoritmo valoramos el coste de cada nodo para 
-    llegar al Goal como prioridad en la cola y por lo tanto buscamos
-    el camino al Goal menos costoso desde el estado inicial.
+        Para este algoritmo valoramos el coste de cada nodo para 
+        llegar al Goal como prioridad en la cola y por lo tanto buscamos
+        el camino al Goal menos costoso desde el estado inicial.
     '''
     prio_queue = util.PriorityQueue()
     first_node = (problem.getStartState(), None, 0, None)
@@ -174,9 +174,6 @@ def uniformCostSearch(problem):
                      # while de bactrack y suma de costes 
                     
                     prio_queue.push((suc[0], suc[1], suc[2], next_node),cost)
-
-
-    util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
     """
@@ -217,7 +214,6 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                      # while de bactrack y suma de costes 
                     
                     prio_queue.push((suc[0], suc[1], suc[2], next_node),cost + heuristic(suc[0], problem))
-    util.raiseNotDefined()
 
 
 # Abbreviations
