@@ -429,7 +429,7 @@ class FoodSearchProblem:
         self.startingGameState = startingGameState
         self._expanded = 0 # DO NOT CHANGE
         self.heuristicInfo = {} # A dictionary for the heuristic to store information
-
+        self.foodEaten = []
     def getStartState(self):
         return self.start
 
@@ -500,7 +500,18 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+    foodList = foodGrid.asList()
+    if len(foodList) == 0:
+        return 0
+    far_food = None
+    far_distance = -1
+    for f in foodList:
+        d = util.manhattanDistance(position, f)
+        if d > far_distance:
+            far_distance = d
+            far_food = f
+
+    return util.manhattanDistance(position, far_food)
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
