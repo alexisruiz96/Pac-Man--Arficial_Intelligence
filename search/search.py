@@ -188,7 +188,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     prio_queue = util.PriorityQueue()
     first_node = (problem.getStartState(), None, 0, None)
     prio_queue.push(first_node,first_node[2])
-    visited = set()
+    visited = []
     while not prio_queue.isEmpty():
 
         next_node = prio_queue.pop()
@@ -204,7 +204,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
             return actions[0:-1][::-1]
         else:
             if next_node[0] not in visited:
-                visited.add(next_node[0])
+                visited.append(next_node[0])
                 for suc in problem.getSuccessors(next_node[0]):
                     cost = suc[2]
                     parent = next_node
