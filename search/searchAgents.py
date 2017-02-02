@@ -305,7 +305,6 @@ class CornersProblem(search.SearchProblem):
         """
         "*** YOUR CODE HERE ***"
         return len(state[1])==4 #si hemos visitado las 4 esquinas llegamos al goal
-        
         util.raiseNotDefined()
 
     def getSuccessors(self, state):
@@ -328,16 +327,13 @@ class CornersProblem(search.SearchProblem):
             nextx, nexty = int(x + dx), int(y + dy)
             hitsWall = self.walls[nextx][nexty]
 
-            if not hitsWall:
+            if not hitsWall: # comprobamos que no sea un muro
                 visitedCorn_list = list (visitedCorn)
                 nextPos = (nextx, nexty)
                 if nextPos in self.corners: #comparamos si es una de las esquinas y la anadimos al array de visitedCorn
                     if nextPos not in visitedCorn_list:
-                        visitedCorn_list.append(nextPos)
+                        visitedCorn_list.append(nextPos) # si no lo habiamos visitado antes, lo anyadimos
                 successors.append(((nextPos, visitedCorn_list),action,1))
-
-
-
         self._expanded += 1 # DO NOT CHANGE
         return successors
 
@@ -374,12 +370,12 @@ def cornersHeuristic(state, problem):
     "*** YOUR CODE HERE ***"
     man_distances = []
     currentPos = state[0]
-    for c in corners:
+    for c in corners: #iteramos por todos los corners
         if c not in state[1]:
-            m_d = util.manhattanDistance(currentPos, c)
+            m_d = util.manhattanDistance(currentPos, c) #calculamos la distancia de manhattan
             man_distances.append(m_d)
-    if len(man_distances):  
-        return max(man_distances) # Default to trivial solution
+    if len(man_distances): #comprobamos que la lista no este vacia para prevenir errores
+        return max(man_distances) 
     else:
         return 0
 
@@ -404,7 +400,7 @@ class FoodSearchProblem:
         self.startingGameState = startingGameState
         self._expanded = 0 # DO NOT CHANGE
         self.heuristicInfo = {} # A dictionary for the heuristic to store information
-        self.foodEaten = []
+
     def getStartState(self):
         return self.start
 
@@ -475,15 +471,15 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    foodList = foodGrid.asList()
-    if len(foodList) == 0:
+    foodList = foodGrid.asList() #cojemos la lista de alimentos
+    if len(foodList) == 0: #si esta vacia return 0
         return 0
     far_food = None
     far_distance = -1
-    for f in foodList:
-        d = util.manhattanDistance(position, f)
-        if d > far_distance:
-            far_distance = d
+    for f in foodList: #iteramos por cada coordenada de alimentos
+        d = util.manhattanDistance(position, f) #por cada alimento calculamos la distancia de manhatan desde nuestra posicion
+        if d > far_distance: #guardamos la mayor distancia
+            far_distance = d 
             far_food = f
 
     return util.manhattanDistance(position, far_food)
@@ -517,7 +513,7 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        return search.bfs(problem)
+        return search.bfs(problem) #utilizamos el bfs
         util.raiseNotDefined()
 
 class AnyFoodSearchProblem(PositionSearchProblem):
@@ -551,13 +547,12 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         The state is Pacman's position. Fill this in with a goal test that will
         complete the problem definition.
         """
+        "*** YOUR CODE HERE ***"
         x,y = state
-        if self.food[x][y]:
+        if self.food[x][y]: #si en la posicion del estado actual hay alimento hemos llegado al goal
             return True
         else: 
             return False
-        "*** YOUR CODE HERE ***"
-        #return self.food[x][y]
         util.raiseNotDefined()
 
 def mazeDistance(point1, point2, gameState):
