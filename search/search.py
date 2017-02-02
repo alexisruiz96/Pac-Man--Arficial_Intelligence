@@ -117,7 +117,7 @@ def breadthFirstSearch(problem):
     queue = util.Queue()
     first_node = (problem.getStartState(), None, 0, None)
     queue.push(first_node)
-    visited = set()
+    visited = []
     while not queue.isEmpty():
 
         next_node = queue.pop()
@@ -132,7 +132,7 @@ def breadthFirstSearch(problem):
             return actions[0:-1][::-1]
         else:
             if next_node[0] not in visited:
-                visited.add(next_node[0])
+                visited.append(next_node[0])
                 for suc in problem.getSuccessors(next_node[0]):
                     queue.push((suc[0], suc[1], suc[2], next_node))
                     
@@ -194,7 +194,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         next_node = prio_queue.pop()
         
         
-        if problem.isGoalState(next_node[0]):
+        if problem.isGoalState(next_node[0]): 
             actions = [next_node[1]]
             p = next_node[3]
             
