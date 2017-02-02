@@ -295,6 +295,8 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
+        visitedCorn = []
+        return (self.startingPosition,visitedCorn) #devuelvo posicion inicial y esquinas visitadas
         util.raiseNotDefined()
 
     def isGoalState(self, state):
@@ -302,6 +304,8 @@ class CornersProblem(search.SearchProblem):
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
+        return len(state[1])==4 #si hemos visitado las 4 esquinas llegamos al goal
+        
         util.raiseNotDefined()
 
     def getSuccessors(self, state):
@@ -314,17 +318,25 @@ class CornersProblem(search.SearchProblem):
             state, 'action' is the action required to get there, and 'stepCost'
             is the incremental cost of expanding to that successor
         """
-
+        visitedCorn = state[1] #extraemos la lista de esquinas visitadas del estado
         successors = []
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # Add a successor state to the successor list if the action is legal
             # Here's a code snippet for figuring out whether a new position hits a wall:
-            #   x,y = currentPosition
-            #   dx, dy = Actions.directionToVector(action)
-            #   nextx, nexty = int(x + dx), int(y + dy)
-            #   hitsWall = self.walls[nextx][nexty]
+            x,y = state [0]
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            hitsWall = self.walls[nextx][nexty]
 
-            "*** YOUR CODE HERE ***"
+            if not hitsWall:
+                visitedCorn_list = list (visitedCorn)
+                nextPos = (nextx, nexty)
+                if nextPos in self.corners: #comparamos si es una de las esquinas y la anadimos al array de visitedCorn
+                    if nextPos not in visitedCorn_list:
+                        visitedCorn_list.append(nextPos)
+                successors.append(((nextPos, visitedCorn_list),action,1))
+
+
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
