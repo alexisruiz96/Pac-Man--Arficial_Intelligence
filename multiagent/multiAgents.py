@@ -154,7 +154,6 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
-        
         def maxval(gameState, depth):
           depth += 1
           #base case, we look if we have win, lose or reached max depth
@@ -162,39 +161,32 @@ class MinimaxAgent(MultiAgentSearchAgent):
             return self.evaluationFunction(gameState)
           v = float('-Inf')
           for a in gameState.getLegalActions(0): #get allowed pacman actions
-            next_state = gameState.generateSuccessor(0, a)
-            v = max(v, minval(next_state, depth, 1))
+            v = max(v, minval(gameState.generateSuccessor(0, a), depth, 1))
           return v
 
         def minval(gameState, depth, ghostIndex):
-          #print("self depth: "+str(self.depth))
-          #print("depth: "+str(depth))
           if gameState.isWin() or gameState.isLose():
             return self.evaluationFunction(gameState)
 
           v = float('Inf')
-          #print("ghostIndex: "+str(ghostIndex))
-          #print("num agents minus one: "+str(gameState.getNumAgents()-1))
-          if ghostIndex == (gameState.getNumAgents()-1): #es el ultimo ghost
-            for a in gameState.getLegalActions(ghostIndex): #get allowed pacman actions
-              next_state = gameState.generateSuccessor(ghostIndex, a)
-              v = min(v, maxval(next_state, depth))
-          else: #miramos a los otros ghost i escojemos el minimo valor
-            for a in gameState.getLegalActions(ghostIndex): #get allowed pacman actions
-              next_state = gameState.generateSuccessor(ghostIndex, a)
-              v = min(v, minval(next_state, depth, ghostIndex+1))
+          for a in gameState.getLegalActions(ghostIndex): #get allowed pacman actions
+            if ghostIndex == (gameState.getNumAgents()-1): #es el ultimo ghost
+              v = min(v, maxval(gameState.generateSuccessor(ghostIndex, a), depth))
+            else: #miramos a los otros ghost i escojemos el minimo valor
+              v = min(v, minval(gameState.generateSuccessor(ghostIndex, a), depth, ghostIndex+1))
+          return v
 
         pacmanActions = gameState.getLegalActions(0)
         maximum = float('-Inf')
         maxAction = ''
         for action in pacmanActions:
-          currentDepth = 0
-          currentMax = minval(gameState.generateSuccessor(0, action), currentDepth, 1)
+          depth = 0
+          currentMax = minval(gameState.generateSuccessor(0, action), depth, 1)
           if currentMax > maximum:
             maximum = currentMax
             maxAction = action
         return maxAction
-        
+
         util.raiseNotDefined()
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
