@@ -74,7 +74,32 @@ class ReflexAgent(Agent):
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
         "*** YOUR CODE HERE ***"
-        return successorGameState.getScore()
+        alpha = 1
+        man_score = 0
+        penalization_die = 100
+        collision_occurs = False
+        max_man_dist = 1
+        
+        for g in newGhostStates:
+          if g.getPosition() == newPos:
+            collision_occurs = True
+          man_score += alpha*manhattanDistance(g.getPosition(), newPos)
+        """
+        for g in newGhostStates:
+          man_dist = alpha*manhattanDistance(g.getPosition(), newPos)
+          if man_score < max_man_dist:
+            man_score += -100
+        """
+        #print("man score: "+str(man_score))
+        #ideas to use with score
+        #1. distance from ghost
+        #2. avoid collisions with ghosts
+        #3. count food left
+        #score = successorGameState.getScore() + man_score
+        score = successorGameState.getScore()
+        #if collision_occurs:
+        #  score = score -penalization_die
+        return score
 
 def scoreEvaluationFunction(currentGameState):
     """
@@ -129,6 +154,47 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
+        
+        def maxval(gameState, depth):
+          depth += 1
+          #base case, we look if we have win, lose or reached max depth
+          if gameState.isWin() or gameState.isLose() or depth == self.depth:
+            return self.evaluationFunction(gameState)
+          v = float('-Inf')
+          for a in gameState.getLegalActions(0): #get allowed pacman actions
+            next_state = gameState.generateSuccessor(0, a)
+            v = max(v, minval(next_state, depth, 1))
+          return v
+
+        def minval(gameState, depth, ghostIndex):
+          #print("self depth: "+str(self.depth))
+          #print("depth: "+str(depth))
+          if gameState.isWin() or gameState.isLose():
+            return self.evaluationFunction(gameState)
+
+          v = float('Inf')
+          #print("ghostIndex: "+str(ghostIndex))
+          #print("num agents minus one: "+str(gameState.getNumAgents()-1))
+          if ghostIndex == (gameState.getNumAgents()-1): #es el ultimo ghost
+            for a in gameState.getLegalActions(ghostIndex): #get allowed pacman actions
+              next_state = gameState.generateSuccessor(ghostIndex, a)
+              v = min(v, maxval(next_state, depth))
+          else: #miramos a los otros ghost i escojemos el minimo valor
+            for a in gameState.getLegalActions(ghostIndex): #get allowed pacman actions
+              next_state = gameState.generateSuccessor(ghostIndex, a)
+              v = min(v, minval(next_state, depth, ghostIndex+1))
+
+        pacmanActions = gameState.getLegalActions(0)
+        maximum = float('-Inf')
+        maxAction = ''
+        for action in pacmanActions:
+          currentDepth = 0
+          currentMax = minval(gameState.generateSuccessor(0, action), currentDepth, 1)
+          if currentMax > maximum:
+            maximum = currentMax
+            maxAction = action
+        return maxAction
+        
         util.raiseNotDefined()
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
