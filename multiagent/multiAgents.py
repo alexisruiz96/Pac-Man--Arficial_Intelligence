@@ -80,10 +80,7 @@ class ReflexAgent(Agent):
         collision_occurs = False
         max_man_dist = 1
         
-        for g in newGhostStates:
-          if g.getPosition() == newPos:
-            collision_occurs = True
-          man_score += alpha*manhattanDistance(g.getPosition(), newPos)
+        
         """
         for g in newGhostStates:
           man_dist = alpha*manhattanDistance(g.getPosition(), newPos)
@@ -91,14 +88,55 @@ class ReflexAgent(Agent):
             man_score += -100
         """
         #print("man score: "+str(man_score))
+        score = successorGameState.getScore()
         #ideas to use with score
         #1. distance from ghost
+        ghost_man_score = 0
+        ghost_score_factor = 0
+        for g in newGhostStates:
+          ghost_man_score += max(3, ghost_score_factor*manhattanDistance(g.getPosition(), newPos))
+        score += ghost_man_score
         #2. avoid collisions with ghosts
         #3. count food left
+        #4. manhattan distance between closest food
+        nearest_f = ""
+        nearest_f_man_dist = float("Inf")
+        x = 0
+        y = 0
+        for row in newFood:
+          for f in row:
+            if f:
+              food_pos = (x, y)
+              f_mand = manhattanDistance((x, y), newPos)
+              #score -= f_mand
+                #nearest_f_man_dist = f_mand
+                #nearest_f = food_pos
+          y += 1
+        x += 1
+
+        if action == Directions.STOP:
+          score -= 300
+
+        #current_f_man = manhattanDistance(nearest_f, currentGameState.getPacmanPosition())
+        #print(current_f_man)
+        #print(nearest_f_man_dist)
+        #if current_f_man >= nearest_f_man_dist:
+        #  score +=100
+
+        #print(current_f_man)
+        #print(nearest_f_man_dist)
+
+        food_man_score = 0
+        food_score_factor = 1
+        
+        #score -= food_score_factor
         #score = successorGameState.getScore() + man_score
-        score = successorGameState.getScore()
+        #5. if we have food, go:
+
         #if collision_occurs:
         #  score = score -penalization_die
+        # 
+        #print(score)
         return score
 
 def scoreEvaluationFunction(currentGameState):
@@ -175,17 +213,16 @@ class MinimaxAgent(MultiAgentSearchAgent):
             else: #miramos a los otros ghost i escojemos el minimo valor
               v = min(v, minval(gameState.generateSuccessor(ghostIndex, a), depth, ghostIndex+1))
           return v
-
-        pacmanActions = gameState.getLegalActions(0)
-        maximum = float('-Inf')
-        maxAction = ''
-        for action in pacmanActions:
+ 
+        last_maxval = float('-Inf')
+        max_action = ''
+        for a in gameState.getLegalActions(0):
           depth = 0
-          currentMax = minval(gameState.generateSuccessor(0, action), depth, 1)
-          if currentMax > maximum:
-            maximum = currentMax
-            maxAction = action
-        return maxAction
+          new_maxval = minval(gameState.generateSuccessor(0, a), depth, 1)
+          if new_maxval > last_maxval:
+            last_maxval = new_maxval
+            max_action = a
+        return max_action
 
         util.raiseNotDefined()
 
@@ -199,6 +236,46 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
           Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
+        def maxval(gameState, depth, alpha, beta):
+          depth += 1
+          #base case, we look if we have win, lose or reached max depth
+          if gameState.isWin() or gameState.isLose() or depth == self.depth:
+            return self.evaluationFunction(gameState)
+          v = float('-Inf')
+          for a in gameState.getLegalActions(0): #get allowed pacman actions
+            v = max(v, minval(gameState.generateSuccessor(0, a), depth, 1, alpha, beta))
+            if v >= beta: #
+              return v
+            alpha = max(alpha, v) #we actualize alpha with max value between alpha and v
+          return v
+
+        def minval(gameState, depth, ghostIndex, alpha, beta):
+          if gameState.isWin() or gameState.isLose():
+            return self.evaluationFunction(gameState)
+
+          v = float('Inf')
+          for a in gameState.getLegalActions(ghostIndex): #get allowed pacman actions
+            if ghostIndex == (gameState.getNumAgents()-1): #es el ultimo ghost
+              v = min(v, maxval(gameState.generateSuccessor(ghostIndex, a), depth, alpha, beta))
+            else: #miramos a los otros ghost i escojemos el minimo valor
+              v = min(v, minval(gameState.generateSuccessor(ghostIndex, a), depth, ghostIndex+1, alpha, beta))
+            if v <= alpha: # we prune, never will find a smallest v
+              return v
+            beta = min(beta, v) #we actualize beta with min value between beta and v
+          return v
+
+        last_maxval = float('-Inf')
+        max_action = ''
+        alpha = float('-Inf')
+        beta = float('Inf')
+        for a in gameState.getLegalActions(0):
+          depth = 0
+          new_maxval = minval(gameState.generateSuccessor(0, a), depth, 1, alpha, beta)
+          if new_maxval > last_maxval:
+            max_action = a
+            last_maxval = new_maxval
+        return max_action
+
         util.raiseNotDefined()
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
