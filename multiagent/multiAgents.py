@@ -213,17 +213,14 @@ class MinimaxAgent(MultiAgentSearchAgent):
             else: #miramos a los otros ghost i escojemos el minimo valor
               v = min(v, minval(gameState.generateSuccessor(ghostIndex, a), depth, ghostIndex+1))
           return v
- 
-        last_maxval = float('-Inf')
-        max_action = ''
+
+        vals_of_min =[]
         for a in gameState.getLegalActions(0):
           depth = 0
-          new_maxval = minval(gameState.generateSuccessor(0, a), depth, 1)
-          if new_maxval > last_maxval:
-            last_maxval = new_maxval
-            max_action = a
-        return max_action
+          vals_of_min.append((minval(gameState.generateSuccessor(0, a), depth, 1), a))
 
+        return max(vals_of_min,key=lambda item:item[0])[1]
+        
         util.raiseNotDefined()
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
