@@ -185,11 +185,11 @@ class MinimaxAgent(MultiAgentSearchAgent):
           return v
 
         vals_of_min =[]
-        for a in gameState.getLegalActions(0):
-          depth = 0
-          vals_of_min.append((minval(gameState.generateSuccessor(0, a), depth, 1), a))
+        for a in gameState.getLegalActions(0): #for all possible actions
+          depth = 0 #start depth at 0
+          vals_of_min.append((minval(gameState.generateSuccessor(0, a), depth, 1), a)) #we store all the values
 
-        return max(vals_of_min,key=lambda item:item[0])[1]
+        return max(vals_of_min,key=lambda item:item[0])[1] #get the action of the tuple containing the maximum value
         
         util.raiseNotDefined()
 
@@ -211,7 +211,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
           v = float('-Inf')
           for a in gameState.getLegalActions(0): #get allowed pacman actions
             v = max(v, minval(gameState.generateSuccessor(0, a), depth, 1, alpha, beta))
-            if v > beta: #
+            if v > beta: #if we find a v bigger than beta, we can prune
               return v
             alpha = max(alpha, v) #we actualize alpha with max value between alpha and v
           return v
@@ -225,7 +225,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
               v = min(v, maxval(gameState.generateSuccessor(ghostIndex, a), depth, alpha, beta))
             else: #miramos a los otros ghost i escojemos el minimo valor
               v = min(v, minval(gameState.generateSuccessor(ghostIndex, a), depth, ghostIndex+1, alpha, beta))
-            if v < alpha: # we prune, never will find a smallest v
+            if v < alpha: #if we find a v smaller than beta, we can prune
               return v
             beta = min(beta, v) #we actualize beta with min value between beta and v
           return v
@@ -239,13 +239,11 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
           vals_of_min.append((minval(gameState.generateSuccessor(0, a), depth, 1, alpha, beta), a))
           max_min_val = max(vals_of_min,key=lambda item:item[0])[0]
           max_minaction = max(vals_of_min,key=lambda item:item[0])[1]
-          if max_min_val>beta:
+          if max_min_val>beta: #we prune idf the maximum minval is bigger than beta and we return the action associated with it
             return max_minaction
           alpha = max(alpha, max_min_val)
-          
 
-
-        return max(vals_of_min,key=lambda item:item[0])[1]
+        return max(vals_of_min,key=lambda item:item[0])[1]  #get the action of the tuple containing the maximum value
 
         util.raiseNotDefined()
 
