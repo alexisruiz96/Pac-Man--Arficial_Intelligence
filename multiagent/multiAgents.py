@@ -74,7 +74,6 @@ class ReflexAgent(Agent):
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
         "*** YOUR CODE HERE ***"
-        alpha = 1
         man_score = 0
         penalization_die = 100
         collision_occurs = False
@@ -261,17 +260,15 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
             beta = min(beta, v) #we actualize beta with min value between beta and v
           return v
 
-        last_maxval = float('-Inf')
-        max_action = ''
+        
         alpha = float('-Inf')
         beta = float('Inf')
+        vals_of_min =[]
         for a in gameState.getLegalActions(0):
           depth = 0
-          new_maxval = minval(gameState.generateSuccessor(0, a), depth, 1, alpha, beta)
-          if new_maxval > last_maxval:
-            max_action = a
-            last_maxval = new_maxval
-        return max_action
+          vals_of_min.append((minval(gameState.generateSuccessor(0, a), depth, 1, alpha, beta), a))
+
+        return max(vals_of_min,key=lambda item:item[0])[1]
 
         util.raiseNotDefined()
 
