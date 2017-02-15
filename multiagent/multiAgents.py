@@ -74,68 +74,40 @@ class ReflexAgent(Agent):
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
         "*** YOUR CODE HERE ***"
-        man_score = 0
-        penalization_die = 100
-        collision_occurs = False
-        max_man_dist = 1
         
-        
-        """
-        for g in newGhostStates:
-          man_dist = alpha*manhattanDistance(g.getPosition(), newPos)
-          if man_score < max_man_dist:
-            man_score += -100
-        """
-        #print("man score: "+str(man_score))
         score = successorGameState.getScore()
-        #ideas to use with score
-        #1. distance from ghost
-        ghost_man_score = 0
-        ghost_score_factor = 0
+
+        if action == Directions.STOP: # penalize stay in the place
+          score -= 100
+
+
+        """ # We tried to maximize if next pos was food
+        if currentGameState.getFood()[newPos[0]][newPos[1]]:
+          score += 500
+
+        #We tried to minimize if in next pos there was a ghost
+        for g in newGhostStates: 
+          if g.getPosition() == newPos:
+            score -= 501
+        """
+        """
+        #We tried to maximize as far as it was from the ghost with manhattan distance
+        ghost_man_factor = 0.25
         for g in newGhostStates:
-          ghost_man_score += max(3, ghost_score_factor*manhattanDistance(g.getPosition(), newPos))
-        score += ghost_man_score
-        #2. avoid collisions with ghosts
-        #3. count food left
-        #4. manhattan distance between closest food
-        nearest_f = ""
-        nearest_f_man_dist = float("Inf")
-        x = 0
-        y = 0
-        for row in newFood:
-          for f in row:
-            if f:
-              food_pos = (x, y)
-              f_mand = manhattanDistance((x, y), newPos)
-              #score -= f_mand
-                #nearest_f_man_dist = f_mand
-                #nearest_f = food_pos
-          y += 1
-        x += 1
-
-        if action == Directions.STOP:
-          score -= 300
-
-        #current_f_man = manhattanDistance(nearest_f, currentGameState.getPacmanPosition())
-        #print(current_f_man)
-        #print(nearest_f_man_dist)
-        #if current_f_man >= nearest_f_man_dist:
-        #  score +=100
-
-        #print(current_f_man)
-        #print(nearest_f_man_dist)
-
-        food_man_score = 0
-        food_score_factor = 1
+          man_dist = manhattanDistance(g.getPosition(), newPos)
+          score += ghost_man_factor*man_dist
         
-        #score -= food_score_factor
-        #score = successorGameState.getScore() + man_score
-        #5. if we have food, go:
+        """
+        
+        #Manhattan distance between closest food, only if there is no food on the new position
+        if not currentGameState.getFood()[newPos[0]][newPos[1]]:
+          min_food_man = float("Inf")
+          food = newFood.asList()
+          for f in food:
+            f_man = manhattanDistance(f, newPos)
+            min_food_man = min(f_man, min_food_man)
+          score -= min_food_man
 
-        #if collision_occurs:
-        #  score = score -penalization_die
-        # 
-        #print(score)
         return score
 
 def scoreEvaluationFunction(currentGameState):
@@ -191,10 +163,9 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
-        def maxval(gameState, depth):
-          depth += 1
-          #base case, we look if we have win, lose or reached max depth
-          if gameState.isWin() or gameState.isLose() or depth == self.depth:
+        def maxval(gameState, depth): #max agent function
+          depth += 1 #each time we enter to max function, we are in a new depth level, so we add 1
+          if gameState.isWin() or gameState.isLose() or depth == self.depth: #base case, we look if we have win, lose or reached max depth
             return self.evaluationFunction(gameState)
           v = float('-Inf')
           for a in gameState.getLegalActions(0): #get allowed pacman actions
@@ -206,10 +177,10 @@ class MinimaxAgent(MultiAgentSearchAgent):
             return self.evaluationFunction(gameState)
 
           v = float('Inf')
-          for a in gameState.getLegalActions(ghostIndex): #get allowed pacman actions
-            if ghostIndex == (gameState.getNumAgents()-1): #es el ultimo ghost
+          for a in gameState.getLegalActions(ghostIndex): #get allowed ghost actions
+            if ghostIndex == (gameState.getNumAgents()-1): #last ghost
               v = min(v, maxval(gameState.generateSuccessor(ghostIndex, a), depth))
-            else: #miramos a los otros ghost i escojemos el minimo valor
+            else: #look for other ghosts and choose the minimum value
               v = min(v, minval(gameState.generateSuccessor(ghostIndex, a), depth, ghostIndex+1))
           return v
 
