@@ -213,7 +213,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
             v = max(v, minval(gameState.generateSuccessor(0, a), depth, 1, alpha, beta))
             if v > beta: #if we find a v bigger than beta, we can prune
               return v
-            alpha = max(alpha, v) #we actualize alpha with max value between alpha and v
+            alpha = max(alpha, v) #we update alpha with max value between alpha and v
           return v
 
         def minval(gameState, depth, ghostIndex, alpha, beta):
@@ -227,7 +227,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
               v = min(v, minval(gameState.generateSuccessor(ghostIndex, a), depth, ghostIndex+1, alpha, beta))
             if v < alpha: #if we find a v smaller than beta, we can prune
               return v
-            beta = min(beta, v) #we actualize beta with min value between beta and v
+            beta = min(beta, v) #we update beta with min value between beta and v
           return v
 
         
