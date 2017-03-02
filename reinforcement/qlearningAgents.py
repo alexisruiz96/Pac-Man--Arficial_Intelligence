@@ -43,7 +43,7 @@ class QLearningAgent(ReinforcementAgent):
         ReinforcementAgent.__init__(self, **args)
 
         "*** YOUR CODE HERE ***"
-        self.qvalues = util.Counter()
+        self.qvalues = util.Counter() #for every state and action we store his qvalue
     def getQValue(self, state, action):
         """
           Returns Q(state,action)
@@ -53,7 +53,7 @@ class QLearningAgent(ReinforcementAgent):
         "*** YOUR CODE HERE ***"
         key = (state,action)
 
-        if key not in self.qvalues:
+        if key not in self.qvalues:#if key is not in qvalues we initialize in 0
           self.qvalues[key] = 0.0
         
         return self.qvalues[key]
@@ -72,14 +72,14 @@ class QLearningAgent(ReinforcementAgent):
         "*** YOUR CODE HERE ***"
         temp = util.Counter() #temporal counter that counts for a set of given keys
         legalActions = self.getLegalActions(state)
-        if len(legalActions) == 0:
+        if len(legalActions) == 0: #there are no legal actions
           bestActionVal = 0.0
           return bestActionVal
 
-        for action in legalActions:
+        for action in legalActions: #for every action save qvalue
           temp[action] = self.getQValue(state,action)
-        
-        bestActionVal = temp[temp.argMax()]
+        #temp.argMax() returns key with highest value 
+        bestActionVal = temp[temp.argMax()]#returns value of action with highest value
         return bestActionVal
         util.raiseNotDefined()
 
@@ -101,18 +101,18 @@ class QLearningAgent(ReinforcementAgent):
         for action in legalActions: #for every action inside legalActions we get the qValue and store it in his position
           temp[action] = self.getQValue(state,action)
         '''
+        DON'T WORK
         for action in temp.sortedKeys(): #to break ties
           print action
           #print temp[action]
           if temp[action] == bestActionVal:
-            print ("hola")
             maxList.append(action) 
           if temp[action] != bestActionVal:
-            print("adios")
             break 
         print maxList[0]
+        bestAction = random.choice(maxList)
         '''
-        #bestAction = random.choice(maxList)
+        
         return temp.argMax()
         util.raiseNotDefined()
 
@@ -131,13 +131,13 @@ class QLearningAgent(ReinforcementAgent):
         legalActions = self.getLegalActions(state)
         action = None
         "*** YOUR CODE HERE ***"
-        if len(legalActions)==0:
+        if len(legalActions)==0:#when there are no legal actions
           return None
 
-        if util.flipCoin(self.epsilon):
+        if util.flipCoin(self.epsilon):#chooses random actions an epsilon fraction of the time
           action = random.choice(legalActions) 
         else:
-          action = self.getPolicy(state)
+          action = self.getPolicy(state)#apply policy to an action given a state
 
         return action
         util.raiseNotDefined()
@@ -158,6 +158,7 @@ class QLearningAgent(ReinforcementAgent):
         oldValue = self.getQValue(state,action)
         newValue = self.computeValueFromQValues(nextState)
         self.qvalues[(state,action)] = (1-alpha)*oldValue + alpha * (reward + gamma * newValue)
+        #update the qvalue given a state and an action
 
     def getPolicy(self, state):
         return self.computeActionFromQValues(state)
@@ -222,11 +223,11 @@ class ApproximateQAgent(PacmanQAgent):
         #Q-function
         #Q(s,a)=sum(fi(s,a)wi)
         "*** YOUR CODE HERE ***"
-        q = 0
-        weights = self.getWeights()
-        features = self.featExtractor.getFeatures(state,action)
+        q = 0 #initialize q to 0
+        weights = self.getWeights() #weight vector
+        features = self.featExtractor.getFeatures(state,action)#returns a dict from features to counts
         
-        for f in features:
+        for f in features:#for every feature we calculate his value witg Q-function
           q+=weights[f]*features[f]
         return q
 
@@ -242,8 +243,8 @@ class ApproximateQAgent(PacmanQAgent):
         alpha = self.alpha
         gamma = self.discount
         difference = (reward + gamma * self.computeValueFromQValues(nextState)) - self.getQValue(state,action)
-        for f in features:
-          weights[f] = weights[f] + alpha * difference * features[f]
+        for f in features:#for every feature we update the weight associated to it
+          weights[f] = weights[f] + alpha * difference * features[f]#calculate updated weight value
         
 
     def final(self, state):
